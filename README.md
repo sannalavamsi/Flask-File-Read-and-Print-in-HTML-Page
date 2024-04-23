@@ -33,7 +33,7 @@ pip install -r requirements.txt
 flask run
 
 7. based on start and end endpoint: 
-http://localhost:5000/file2.txt?start=1&end=30
+http://localhost:5000/file2.txt?start_line=1&end_line=3
 
 
 ## Endpoints
@@ -46,6 +46,7 @@ http://localhost:5000/file2.txt?start=1&end=30
 
 Example:
 http://127.0.0.1:5000/ - Displays all lines of file1.txt.
+
 http://127.0.0.1:5000/file2.txt?start_line=1&end_line=3 - Displays lines 1 to 3 of file2.txt.
 
 
