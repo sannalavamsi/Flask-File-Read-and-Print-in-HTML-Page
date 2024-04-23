@@ -49,7 +49,7 @@ http://127.0.0.1:5000/ - Displays all lines of file1.txt.
 http://127.0.0.1:5000/file2.txt?start_line=1&end_line=3 - Displays lines 1 to 3 of file2.txt.
 
 
-# GET /<filename>
+# GET /samplefilename.txt
 
 . Displays the content of the specified file.
 . Renders the content in an HTML page with any markup preserved.
