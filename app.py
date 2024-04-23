@@ -12,7 +12,7 @@ app = Flask(__name__, template_folder='templates', static_folder='static_files')
 static_dir = app.static_folder
 
 @lru_cache(maxsize=128)
-def read_file(file_path, start_line=None, end_line=None):
+def read_file(file_path, start_line, end_line):
     """
     Read the content of a file with optional start and end line numbers.
 
@@ -40,16 +40,25 @@ def read_file(file_path, start_line=None, end_line=None):
         logging.error(error_msg)
         return error_msg
 
-    if start_line is not None and end_line is not None:
-        content_lines = content.split('\n')
-        selected_lines = content_lines[start_line:end_line+1]
-        content = '\n'.join(selected_lines)
-        if not content.strip():
-            error_msg = "No content found between start line and end line."
-            logging.error(error_msg)
-            return error_msg
+    content_lines = content.split('\n')
+    if start_line is None and end_line is None:
+        selected_lines = content_lines[:]
+    elif start_line is not None and end_line is not None:
+        if start_line < 0 or end_line < 0 or start_line > end_line:
+            raise ValueError("Invalid start_line or end_line values.")
+        selected_lines = content_lines[start_line : end_line + 1]
+    elif start_line is None and end_line is not None:
+        if end_line < 0:
+            raise ValueError("Invalid end_line value.")
+        selected_lines = content_lines[:end_line +1]
+    elif start_line is not None and end_line is None:
+        if start_line < 0:
+            raise ValueError("Invalid start_line value.")
+        if start_line > len(content_lines):  # Check if start_line is out of range
+            raise IndexError("start_line is out of range.")
+        selected_lines = content_lines[start_line :]
         
-    return content
+    return '\n'.join(selected_lines)
 
 @app.route('/', methods=['GET'])
 @app.route('/<filename>', methods=['GET'])
