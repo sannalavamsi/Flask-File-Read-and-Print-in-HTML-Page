@@ -1,7 +1,12 @@
 import os
 import chardet
+import logging
 from functools import lru_cache
 from flask import Flask, render_template, request
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__, template_folder='templates', static_folder='static_files')
 static_dir = app.static_folder
@@ -31,14 +36,18 @@ def read_file(file_path, start_line=None, end_line=None):
     try:
         content = content_bytes.decode(detected_encoding)
     except UnicodeDecodeError:
-        return "Error decoding file with detected encoding: {}".format(detected_encoding)
+        error_msg = "Error decoding file with detected encoding: {}".format(detected_encoding)
+        logging.error(error_msg)
+        return error_msg
 
     if start_line is not None and end_line is not None:
         content_lines = content.split('\n')
         selected_lines = content_lines[start_line:end_line+1]
         content = '\n'.join(selected_lines)
         if not content.strip():
-            return "No content found between start line and end line."
+            error_msg = "No content found between start line and end line."
+            logging.error(error_msg)
+            return error_msg
         
     return content
 
@@ -72,8 +81,10 @@ def display_file(filename='file1.txt'):
 
         content = read_file(file_path, start_line, end_line)
     except (FileNotFoundError, ValueError) as e:
+        logging.error("Error occurred while processing request: %s", e) 
         return render_template('error.html', error=str(e))
     except Exception as e:
+        logging.exception("An error occurred while processing request: %s", e)
         return render_template('error.html', error="An error occurred: {}".format(str(e)))
 
 
