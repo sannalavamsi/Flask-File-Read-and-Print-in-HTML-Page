@@ -8,6 +8,18 @@ static_dir = app.static_folder
 
 @lru_cache(maxsize=128)
 def read_file(file_path, start_line=None, end_line=None):
+    """
+    Read the content of a file with optional start and end line numbers.
+
+    Args:
+        file_path (str): The path to the file to read.
+        start_line (int, optional): The line number to start reading from. Defaults to None.
+        end_line (int, optional): The line number to stop reading at. Defaults to None.
+
+    Returns:
+        str: The content of the file between the specified start and end lines, or the entire file content if no lines are specified.
+             Returns an error message if the file cannot be read or if there's an issue decoding the file.
+    """
     with open(file_path, 'rb') as f:
         # Detect encoding
         detected_encoding = chardet.detect(f.read())['encoding']
@@ -33,6 +45,15 @@ def read_file(file_path, start_line=None, end_line=None):
 @app.route('/', methods=['GET'])
 @app.route('/<filename>', methods=['GET'])
 def display_file(filename='file1.txt'):
+    """
+    Display the content of a file in the browser.
+
+    Args:
+        filename (str, optional): The name of the file to display. Defaults to 'file1.txt'.
+
+    Returns:
+        str: The rendered HTML content of the file, or an error message if the file is not found or if there's an issue processing it.
+    """
     try:
         file_path = os.path.join(static_dir, filename)
 
